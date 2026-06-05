@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState,useEffect} from "react";
 import { Send, Leaf, BarChart3, Thermometer, Droplets, Wind, CloudRain } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
@@ -61,6 +61,8 @@ const initialData = {
   annual_rainfall: "200.0",
 };
 
+const SENSOR_API = "http://localhost:5000/api/sensor/latest";
+
 export default function AgriMindDashboard() {
   const [formData, setFormData] = useState(initialData);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,6 +71,33 @@ export default function AgriMindDashboard() {
     confidence: number;
     all_probabilities: Record<string, number>;
   } | null>(null);
+
+  useEffect(() => {
+  loadSensorData();
+}, []);
+
+const loadSensorData = async () => {
+  try {
+    const response = await fetch(SENSOR_API);
+    const result = await response.json();
+
+    if (!result.success) return;
+
+    const sensor = result.data;
+
+    setFormData((prev) => ({
+      ...prev,
+      temperature: sensor.temperature?.toString() || "",
+      humidity: sensor.humidity?.toString() || "",
+      soil_ph: sensor.soil_ph?.toString() || "",
+      N: sensor.N?.toString() || "",
+      P: sensor.P?.toString() || "",
+      K: sensor.K?.toString() || "",
+    }));
+  } catch (error) {
+    console.error("Failed to load sensor data:", error);
+  }
+};
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
