@@ -61,7 +61,7 @@ const initialData = {
   annual_rainfall: "200.0",
 };
 
-const SENSOR_API = "http://localhost:5000/api/sensor/latest";
+const SENSOR_API = "https://agrimind-latest.onrender.com/api/sensor/latest";
 
 export default function AgriMindDashboard() {
   const [formData, setFormData] = useState(initialData);
